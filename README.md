@@ -141,8 +141,25 @@ observable.subscribe(observer);
 observable.subscribe(subscriber);
 ```
 
+> 有人可能注意到，subscribe()这个方法很奇怪：它看起来是`observable`订阅了`observer`/`subscriber`，而不是`observer`/`subscriber`订阅了`observable`，这看起来就像 杂志订阅了读者 一样颠倒了对象关系。这让人读起来有点别扭，不过如果把 API 设计成 `observer.subscribe(observable)` / `subscriber.subscribe(observable)` ，虽然更加符合思维逻辑，但对流式 API 的设计就造成影响了，比较起来明显是得不偿失的。
 
+`Observable.subscribe(Subscriber)` 的内部实现是这样的（仅核心代码）：
 
+```java
+// 注意：这不是 subscribe() 的源码，而是将源码中与性能、兼容性、扩展性有关的代码剔除后的核心代码。
+// 如果需要看源码，可以去 RxJava 的 GitHub 仓库下载。
+public Subscription subscribe(Subscriber subscriber) {
+    subscriber.onStart();
+    onSubscribe.call(subscriber);
+    return subscriber;
+}
+```
+
+可以看到，subscriber() 做了3件事：
+
+1. 调用 Subscriber.onStart() 。这个方法在前面已经介绍过，是一个可选的准备方法。
+2. 调用 Observable 中的 OnSubscribe.call(Subscriber) 。在这里，事件发送的逻辑开始运行。从这也可以看出，在 RxJava 中， Observable 并不是在创建的时候就立即开始发送事件，而是在它被订阅的时候，即当 subscribe() 方法执行的时候。
+3. 将传入的 Subscriber 作为 Subscription 返回。这是为了方便 unsubscribe()。
 
 ## 参考文章
 
