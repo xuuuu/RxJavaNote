@@ -147,7 +147,6 @@ observable.subscribe(subscriber);
 
 ```java
 // 注意：这不是 subscribe() 的源码，而是将源码中与性能、兼容性、扩展性有关的代码剔除后的核心代码。
-// 如果需要看源码，可以去 RxJava 的 GitHub 仓库下载。
 public Subscription subscribe(Subscriber subscriber) {
     subscriber.onStart();
     onSubscribe.call(subscriber);
@@ -200,7 +199,44 @@ Observable.just("images/logo.png") // 输入类型 String
         }
 });
 ```
+2) flatMap(): 事件对象的一对多的变换。
 
+```java
+Student[] students = ...;
+Subscriber<Course> subscriber = new Subscriber<Course>() {
+    @Override
+    public void onNext(Course course) {
+        Log.d(tag, course.getName());
+    }
+    ...
+};
+Observable.from(students)
+    .flatMap(new Func1<Student, Observable<Course>>() {
+        @Override
+        public Observable<Course> call(Student student) {
+            return Observable.from(student.getCourses());
+        }
+    })
+    .subscribe(subscriber);
+```
+
+flatMap() 和 map() 有一个相同点：它也是把传入的参数转化之后返回另一个对象。但需要注意，和 map() 不同的是， flatMap() 中返回的是个 Observable 对象，并且这个 Observable 对象并不是被直接发送到了 Subscriber 的回调方法中。 flatMap() 的原理是这样的：1. 使用传入的事件对象创建一个 Observable 对象；2. 并不发送这个 Observable, 而是将它激活，于是它开始发送事件；3. 每一个创建出来的 Observable 发送的事件，都被汇入同一个 Observable ，而这个 Observable 负责将这些事件统一交给 Subscriber 的回调方法。这三个步骤，把事件拆成了两级，通过一组新创建的 Observable 将初始的对象『铺平』之后通过统一路径分发了下去。而这个『铺平』就是 flatMap() 所谓的 flat。
+
+3) lift(): 变换的原理，这些变换虽然功能各有不同，但实质上都是`针对事件序列的处理和再发送`。而在 RxJava 的内部，它们是基于同一个基础的变换方法： lift(Operator)。首先看一下 lift() 的内部实现（仅核心代码）：
+
+```java
+// 注意：这不是 lift() 的源码，而是将源码中与性能、兼容性、扩展性有关的代码剔除后的核心代码。
+public <R> Observable<R> lift(Operator<? extends R, ? super T> operator) {
+    return Observable.create(new OnSubscribe<R>() {
+        @Override
+        public void call(Subscriber subscriber) {
+            Subscriber newSubscriber = operator.call(subscriber);
+            newSubscriber.onStart();
+            onSubscribe.call(newSubscriber);
+        }
+    });
+}
+```
 
 
 ## 参考文章
