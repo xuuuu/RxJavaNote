@@ -161,10 +161,34 @@ public Subscription subscribe(Subscriber subscriber) {
 2. 调用 Observable 中的 OnSubscribe.call(Subscriber) 。在这里，事件发送的逻辑开始运行。从这也可以看出，在 RxJava 中， Observable 并不是在创建的时候就立即开始发送事件，而是在它被订阅的时候，即当 subscribe() 方法执行的时候。
 3. 将传入的 Subscriber 作为 Subscription 返回。这是为了方便 unsubscribe()。
 
+## 线程控制————Scheduler
+
+在不指定线程的情况下， RxJava 遵循的是线程不变的原则，即：在哪个线程调用 `subscribe()`，就在哪个线程生产事件；在哪个线程生产事件，就在哪个线程消费事件。如果需要切换线程，就需要用到 `Scheduler` （调度器）。先上代码：
+
+```java
+Observable.just(1, 2, 3, 4)
+    .subscribeOn(Schedulers.io()) // 指定 subscribe() 发生在 IO 线程
+    .observeOn(AndroidSchedulers.mainThread()) // 指定 Subscriber 的回调发生在主线程
+    .subscribe(new Action1<Integer>() {
+        @Override
+        public void call(Integer number) {
+            Log.d(tag, "number:" + number);
+        }
+});
+```
+
+上面这段代码中，由于 `subscribeOn(Schedulers.io())` 的指定，被创建的事件的内容 1、2、3、4 将会在 IO 线程发出；而由于 `observeOn(AndroidScheculers.mainThread())` 的指定，因此 `subscriber` 数字的打印将发生在主线程 。事实上，这种在 `subscribe()` 之前写上两句 `subscribeOn(Scheduler.io())` 和 `observeOn(AndroidSchedulers.mainThread())` 的使用方式非常常见，它适用于多数的 『后台线程取数据，主线程显示』的程序策略。
+
+## 变换
+
+RxJava 提供了对事件序列进行变换的支持，这是它的核心功能之一，也是大多数人说『RxJava 真是太好用了』的最大原因。`所谓变换，就是将事件序列中的对象或整个序列进行加工处理，转换成不同的事件或事件序列。`
+
+
+
 ## 参考文章
 
 [给 Android 开发者的 RxJava 详解] (http://gank.io/post/560e15be2dca930e00da1083)
 
-[从案例学习RxAndroid] (http://blog.chengdazhi.com/index.php/140?hmsr=toutiao.io&utm_medium=toutiao.io&utm_source=toutiao.io)
+[从案例学习RxAndroid] (http://blog.chengdazhi.com/index.php/category/rxjava)
 
 [RxJava Essentials CN] (https://www.gitbook.com/book/yuxingxin/rxjava-essentials-cn/details)
