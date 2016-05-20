@@ -237,7 +237,7 @@ public <R> Observable<R> lift(Operator<? extends R, ? super T> operator) {
     });
 }
 ```
-
+它是生成一个新的`Observable`并返回，而且创建的新`Observable`所用的方式
 
 ## 参考文章
 
