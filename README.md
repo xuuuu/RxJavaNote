@@ -165,8 +165,15 @@ public Subscription subscribe(Subscriber subscriber) {
 在不指定线程的情况下， RxJava 遵循的是线程不变的原则，即：在哪个线程调用 `subscribe()`，就在哪个线程生产事件；在哪个线程生产事件，就在哪个线程消费事件。如果需要切换线程，就需要用到 `Scheduler` （调度器）。先上代码：
 
 ```java
-Observable.just(1, 2, 3, 4)
-    .subscribeOn(Schedulers.io()) // 指定 subscribe() 发生在 IO 线程
+Observable.create(new OnSubscribe<Integer>() {
+        @Override
+        public void call(Subscriber<? super Integer> subscriber) {
+            subscriber.onNext(1);
+            subscriber.onNext(2);
+            subscriber.onNext(3);
+            subscriber.onCompleted();
+        }
+    }).subscribeOn(Schedulers.io()) // 指定 subscribe() 发生在 IO 线程
     .observeOn(AndroidSchedulers.mainThread()) // 指定 Subscriber 的回调发生在主线程
     .subscribe(new Action1<Integer>() {
         @Override
