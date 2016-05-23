@@ -2,7 +2,7 @@
 
 ## 概念
 RxJava最核心的东西就是`Observable`和`Observer`。
-`Observable`会发出数据，而与之对应的`Observer`则会通过`subscribe`(订阅)`Observable`来进行观察。
+`Observable`会发出数据，而与之对应的`Observer`则会通过订阅`Observable`来进行观察。
 
 Observer可以在Observable发出数据、报错或者声明没有数据可以发送时进行相应的操作。
 这三个操作被封装在Observer接口中，相应的方法为onNext()，onError()和onCompleted()。
