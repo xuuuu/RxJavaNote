@@ -53,7 +53,7 @@ Observable observable = Observable.from(words);
 // onCompleted();
 ```
 
-上面 just(T...) 的例子和 from(T[]) 的例子，都和之前的 create(OnSubscribe) 的例子是等价的。
+上面 just(T...) 的例子和 from(T[ ]) 的例子，都和之前的 create(OnSubscribe) 的例子是等价的。
 
 2) 创建Observer
 
