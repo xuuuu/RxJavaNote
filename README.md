@@ -247,6 +247,29 @@ public <R> Observable<R> lift(Operator<? extends R, ? super T> operator) {
 
 它是生成一个新的`Observable`并返回，而且回调方法里面也是生成一个新的Subscriber来执行传入的Operator的方法。
 
+4) compose：对Observable整体的变换。
+
+除了 lift() 之外， Observable 还有一个变换方法叫做 compose(Transformer)。它和 lift() 的区别在于， lift() 是针对事件项和事件序列的，而 compose() 是针对 Observable 自身进行变换。举个例子，假设在程序中有多个 Observable ，并且他们都需要应用一组相同的 lift() 变换。你可以这么写：
+
+```java
+public class LiftAllTransformer implements Observable.Transformer<Integer, String> {
+    @Override
+    public Observable<String> call(Observable<Integer> observable) {
+        return observable
+            .lift1()
+            .lift2()
+            .lift3()
+            .lift4();
+    }
+}
+...
+Transformer liftAll = new LiftAllTransformer();
+observable1.compose(liftAll).subscribe(subscriber1);
+observable2.compose(liftAll).subscribe(subscriber2);
+observable3.compose(liftAll).subscribe(subscriber3);
+observable4.compose(liftAll).subscribe(subscriber4);
+```
+
 ## 参考文章
 
 [给 Android 开发者的 RxJava 详解] (http://gank.io/post/560e15be2dca930e00da1083)
