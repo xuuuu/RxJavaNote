@@ -270,6 +270,31 @@ observable3.compose(liftAll).subscribe(subscriber3);
 observable4.compose(liftAll).subscribe(subscriber4);
 ```
 
+## Subject
+
+Subject这个对象既是Observable又是Observer，可以把Subject想象成一个管道：从一端把数据注入，结果就会从另一端输出。
+
+Subject有好几类，在这里就介绍最简单的：PublishSubject。使用PublishSubject时，一旦数据从一端注入，结果会立即从另一端输出。
+
+```java
+PublishSubject mCounterEmitter = PublishSubject.create(); 
+mCounterEmitter.subscribe(new Observer<Integer>() {
+
+    @Override
+    public void onCompleted() { } 
+
+    @Override
+    public void onError(Throwable e) { } 
+
+    @Override
+    public void onNext(Integer integer) {
+        mCounterDisplay.setText(String.valueOf(integer));
+    } 
+});
+
+mCounterEmitter.onNext(mCounter);
+```
+
 ## 参考文章
 
 [给 Android 开发者的 RxJava 详解] (http://gank.io/post/560e15be2dca930e00da1083)
