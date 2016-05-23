@@ -18,16 +18,16 @@ Observable，并为它定义事件触发规则：
 ```java
 Observable observable = Observable.create(new Observable.OnSubscribe<String>() {
     @Override
-    public void call(Subscriber<? super String> subscriber) {
-        subscriber.onNext("Hello");
-        subscriber.onNext("Hi");
-        subscriber.onNext("Aloha");
-        subscriber.onCompleted();
+    public void call(Observer<? super String> observer) {
+        observer.onNext("Hello");
+        observer.onNext("Hi");
+        observer.onNext("Aloha");
+        observer.onCompleted();
     }
 });
 ```
 
-可以看到，这里传入了一个 `OnSubscribe` 对象作为参数。`OnSubscribe` 会被存储在返回的 `Observable` 对象中，它的作用相当于一个计划表，当 `Observable` 被订阅的时候，`OnSubscribe` 的 `call()` 方法会自动被调用，事件序列就会依照设定依次触发（对于上面的代码，就是观察者Subscriber 将会被调用三次 `onNext()` 和一次 `onCompleted()`）。这样，由被观察者调用了观察者的回调方法，就实现了由被观察者向观察者的事件传递，即观察者模式。
+可以看到，这里传入了一个 `OnSubscribe` 对象作为参数。`OnSubscribe` 会被存储在返回的 `Observable` 对象中，它的作用相当于一个计划表，当 `Observable` 被订阅的时候，`OnSubscribe` 的 `call()` 方法会自动被调用，事件序列就会依照设定依次触发（对于上面的代码，就是观察者`Observer` 将会被调用三次 `onNext()` 和一次 `onCompleted()`）。这样，由被观察者调用了观察者的回调方法，就实现了由被观察者向观察者的事件传递，即观察者模式。
 
 create() 方法是 RxJava 最基本的创造事件序列的方法。基于这个方法， RxJava 还提供了一些方法用来快捷创建事件队列，例如：
 
