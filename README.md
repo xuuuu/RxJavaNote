@@ -302,4 +302,5 @@ mCounterEmitter.onNext(mCounter);
 [从案例学习RxAndroid] (http://blog.chengdazhi.com/index.php/category/rxjava)
 
 [RxJava Essentials CN] (https://www.gitbook.com/book/yuxingxin/rxjava-essentials-cn/details)
+
 [关于RxJava最友好的文章] (http://www.jianshu.com/p/6fd8640046f1)
